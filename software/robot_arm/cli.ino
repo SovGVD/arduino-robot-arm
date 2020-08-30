@@ -1,5 +1,5 @@
-#define CLI_MENU_COMMANDS_GET 2
-#define CLI_MENU_COMMANDS_SET 4
+#define CLI_MENU_COMMANDS_GET 3
+#define CLI_MENU_COMMANDS_SET 7
 #define CLI_MENU_COMMANDS_RUN 1
 
 char cliChar;
@@ -10,19 +10,23 @@ unsigned int cliPosCommand = 0;
 unsigned int cliPosState = 0;
 
 const cliCommand cliCommandsGet[CLI_MENU_COMMANDS_GET] = {
-  { "help",   cliGetHelp   },
-  { "angles", cliGetAngles }
+  { "help",     cliGetHelp     },
+  { "angles",   cliGetAngles   },
+  { "position", cliGetPosition }
 };
 
 const cliCommand cliCommandsSet[CLI_MENU_COMMANDS_SET] = {
-  { "help",  cliSetHelp       },
-  { "upper", cliSetUpperAngle },
-  { "lower", cliSetLowerAngle },
-  { "wrist", cliSetWristAngle }
+  { "help",      cliSetHelp       },
+  { "upper",     cliSetUpperAngle },
+  { "lower",     cliSetLowerAngle },
+  { "wrist",     cliSetWristAngle },
+  { "positionx", cliSetPositionX  },
+  { "positiony", cliSetPositionY  },
+  { "test",      cliSetTest       }
 };
 
 const cliCommand cliCommandsRun[CLI_MENU_COMMANDS_RUN] = {
-  { "help",         cliRunHelp        }
+  { "help",         cliRunHelp}
 };
 
 void initCLI() {

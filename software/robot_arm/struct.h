@@ -4,3 +4,8 @@ typedef struct {
   double wrist;
   double gripper;
 } arm;
+
+typedef struct {
+  double x;
+  double y;
+} point;

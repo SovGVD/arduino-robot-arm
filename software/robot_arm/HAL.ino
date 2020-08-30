@@ -1,13 +1,4 @@
 
-arm previousArm = {UPPER_ARM_ANGLE, LOWER_ARM_ANGLE, WRIST_ANGLE, GRIPPER_ANGLE};
-arm currentArm  = {UPPER_ARM_ANGLE, LOWER_ARM_ANGLE, WRIST_ANGLE, GRIPPER_ANGLE};
-arm newArm      = {UPPER_ARM_ANGLE, LOWER_ARM_ANGLE, WRIST_ANGLE, GRIPPER_ANGLE};
-
-double lever_a_sq = LEVER_A*LEVER_A;
-double lever_b_sq = LEVER_B*LEVER_B;
-double lever_c_sq = LEVER_C*LEVER_C;
-double lever_d_sq = LEVER_D*LEVER_D;
-
 double lever_lower_angle_middle = HAL_getAngleFromJointAngle(SERVO_MIDDLE_ANGLE);
 double lever_wrist_angle_middle = HAL_getAngleFromJointAngle(SERVO_MIDDLE_ANGLE);
 
@@ -28,7 +19,33 @@ void HAL_setAngle(uint8_t angleId, double value)
   }
   
   newArm = currentArm;
+  if (angleId == WRIST) {
+    // Changing wrist angle should recalculate all angles
+    newArm = IK_getAngles(newArm, gripperPos);
+  }
   HAL_transition();  
+}
+
+void HAL_setPositionByAxis(uint8_t axisId, double value)
+{
+  point _point = {gripperPos.x, gripperPos.y};
+  
+  switch(axisId) {
+    case POINT_X:
+      _point.x = value;
+      break;
+    case POINT_Y:
+      _point.y = value;
+      break;
+  }
+
+  HAL_setPosition(_point);
+}
+
+void HAL_setPosition(point _point)
+{
+  gripperPos = _point;
+  HAL_setAngles(IK_getAngles(currentArm, _point));  
 }
 
 void HAL_setAngles(arm angles)
@@ -93,19 +110,11 @@ uint16_t HAL_angleToMs(double angle)
 
 double HAL_getAngleFromJointAngle(double jointAngle)
 {
-  double e_sq = lever_d_sq + lever_a_sq - 2 * LEVER_D * LEVER_A * cos((180-jointAngle)*DEGTORAD);
+  double e_sq = upper_arm_l_sq + lever_a_sq - 2 * UPPER_ARM_L * LEVER_A * cos((180-jointAngle)*DEGTORAD);
   double e    = sqrt(e_sq);
 
-  double cosang1 = (lever_d_sq + e_sq - lever_a_sq) / (2 * LEVER_D * e);
+  double cosang1 = (upper_arm_l_sq + e_sq - lever_a_sq) / (2 * UPPER_ARM_L * e);
   double cosang2 = (e_sq + lever_c_sq - lever_b_sq) / (2 * e * LEVER_C);
-//  Serial.println(e_sq);
-//  Serial.println(e);
-//  Serial.println(LEVER_D);
-//  Serial.println(LEVER_C);
-//  Serial.println(2 * LEVER_D * e);
-//  Serial.println(2 * LEVER_C * e);
-//  Serial.println(cosang1);
-//  Serial.println(cosang2);
 
   if (abs(cosang1) > 1) {
     return -1;

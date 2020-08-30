@@ -10,3 +10,14 @@ double cliGetAngles(double id)
 
   return 1;
 }
+
+
+double cliGetPosition(double id)
+{
+  cliSerial->print(gripperPos.x);
+  Serial.print("\t");
+  cliSerial->print(gripperPos.y);
+  cliSerial->println();
+
+  return 1;
+}
